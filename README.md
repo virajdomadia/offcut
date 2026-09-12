@@ -2,7 +2,7 @@
 
 **Streetwear, no filler.** A complete D2C streetwear store — variants, inventory, cart, orders, returns, admin — plus "upload a photo, shop the look" visual search.
 
-> Status: in progress — planning and design stage. One of six portfolio projects by [Viraj Domadia](https://virajdomadia.vercel.app). Will go live at `offcut.virajdomadia.com`.
+> Status: in progress — planning and design stage. One of six portfolio projects by [Viraj Domadia](https://virajdomadia.vercel.app). **Live (landing page):** https://offcut-viraj.vercel.app — will move to `offcut.virajdomadia.com` later.
 
 ## What it proves
 E-commerce data model · order state machine · image embeddings (pgvector) · Razorpay
