@@ -1,0 +1,520 @@
+<title>Offcut Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* ---------- shell (theme-aware) ---------- */
+:root{
+  --sh-bg:#F6F6F4; --sh-ink:#141414; --sh-muted:#66665F; --sh-line:#D9D9D2; --sh-panel:#FFFFFF; --sh-acid:#D6FF3B; --sh-acid-ink:#141414;
+  --font:'Archivo',Helvetica,Arial,sans-serif; --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --sh-bg:#111110; --sh-ink:#F2F2EE; --sh-muted:#A3A39A; --sh-line:#2C2C29; --sh-panel:#1A1A18; } }
+:root[data-theme="dark"]{ --sh-bg:#111110; --sh-ink:#F2F2EE; --sh-muted:#A3A39A; --sh-line:#2C2C29; --sh-panel:#1A1A18; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--sh-bg);color:var(--sh-ink);font-family:var(--font);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.wrap{width:min(1440px,100% - 32px);margin-inline:auto;padding-block:20px 48px}
+h1{margin:0;font-size:clamp(28px,4vw,44px);font-weight:900;letter-spacing:-.04em;text-transform:uppercase;line-height:.95;font-variation-settings:'wdth' 80;text-wrap:balance}
+.lede{color:var(--sh-muted);max-width:70ch;margin:10px 0 0}
+.lede b{color:var(--sh-ink);font-weight:700}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;gap:8px;flex-wrap:wrap;background:var(--sh-bg);padding-block:14px;margin-top:18px;border-bottom:1px solid var(--sh-line)}
+.tab{appearance:none;border:1px solid var(--sh-line);background:var(--sh-panel);color:var(--sh-ink);font:inherit;font-weight:700;padding:10px 14px;cursor:pointer;display:flex;gap:10px;align-items:center;text-transform:uppercase;letter-spacing:.02em;font-size:13px}
+.tab kbd{font-family:var(--mono);font-size:11px;padding:2px 6px;border:1px solid var(--sh-line);color:var(--sh-muted)}
+.tab[aria-selected="true"]{background:var(--sh-ink);color:var(--sh-bg);border-color:var(--sh-ink)}
+.tab[aria-selected="true"] kbd{color:var(--sh-bg);border-color:transparent;background:rgba(255,255,255,.15)}
+.tab:focus-visible,.btn:focus-visible,button:focus-visible{outline:3px solid var(--sh-acid);outline-offset:2px}
+.note{display:grid;grid-template-columns:1fr auto;gap:16px 32px;align-items:start;padding-block:18px 14px}
+.note p{margin:0;max-width:78ch}
+.note .demo{font-family:var(--mono);font-size:12px;color:var(--sh-muted);white-space:nowrap;padding-top:4px}
+.note .demo b{color:var(--sh-ink);font-weight:500}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tools button{font:inherit;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:8px 12px;border:1px solid var(--sh-line);background:var(--sh-panel);color:var(--sh-ink);cursor:pointer}
+.tools button:hover{border-color:var(--sh-ink)}
+.frames{display:grid;grid-template-columns:1fr 390px;gap:20px;align-items:start}
+@media (max-width:1100px){.frames{grid-template-columns:1fr}.note{grid-template-columns:1fr}}
+.frame-label{font-family:var(--mono);font-size:11px;color:var(--sh-muted);margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.scaler{position:relative;overflow:hidden}
+.scaled{transform-origin:top left;width:1280px}
+.phone-scaler .scaled{width:390px}
+.desktop{width:1280px;min-height:900px;border:1px solid var(--sh-line);box-shadow:0 30px 60px -30px rgba(0,0,0,.35);overflow:hidden;position:relative}
+.phone{width:390px;height:844px;border-radius:44px;border:10px solid #111;background:#111;overflow:hidden;position:relative;box-shadow:0 30px 60px -30px rgba(0,0,0,.5)}
+.phone .screen{position:absolute;inset:0;border-radius:34px;overflow:hidden}
+.phone .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:120px;height:32px;border-radius:20px;background:#111;z-index:5}
+.strip{margin-top:26px}
+.credits{margin-top:28px;font-size:13px;color:var(--sh-muted);max-width:90ch}
+.credits a{color:inherit}
+
+/* ---------- stage tokens per direction ---------- */
+.stage{--bg:#fff;--ink:#000;--ink2:#444;--muted:#5E5E5E;--acid:#D6FF3B;--acid-ink:#000;--line:#000;--lw:2px;--tile:#EDEDED;--panel:#fff;--radius:0px;--labelfont:var(--font);--headwdth:72;--glow:none;
+  font-family:var(--font);color:var(--ink);background:var(--bg)}
+.stage[data-dir="b"]{--bg:#0A0A0A;--ink:#fff;--ink2:#CFCFCF;--muted:#9A9A9A;--acid:#D6FF3B;--acid-ink:#000;--line:#262626;--lw:1px;--tile:#151515;--panel:#121212;--glow:0 0 0 1px #1E1E1E,0 30px 60px -20px rgba(214,255,59,.18)}
+.stage[data-dir="c"]{--bg:#F2F0EA;--ink:#141414;--ink2:#3A3A36;--muted:#6E6E66;--acid:#D6FF3B;--acid-ink:#141414;--line:#C9C5BA;--lw:1px;--tile:#E8E5DD;--panel:#F7F5F0;--labelfont:var(--mono);--headwdth:62}
+.stage[data-dir="d"]{--bg:#fff;--ink:#000;--ink2:#333;--muted:#5E5E5E;--acid:#D6FF3B;--acid-ink:#000;--line:#000;--lw:2px;--tile:#F1F1F1;--panel:#fff;--headwdth:80}
+.stage ::selection{background:var(--acid);color:var(--acid-ink)}
+.stage img{display:block;width:100%;height:100%;object-fit:cover}
+.stage h1,.stage h2,.stage h3{margin:0;font-weight:900;line-height:.92;letter-spacing:-.04em;text-transform:uppercase;font-variation-settings:'wdth' var(--headwdth)}
+.stage p{margin:0}
+.lab{font-family:var(--labelfont);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.stage[data-dir="c"] .lab{font-weight:500;letter-spacing:.04em}
+
+/* header (desktop + phone share) */
+.hd{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:16px 32px;border-bottom:var(--lw) solid var(--line);background:var(--panel)}
+.stage[data-dir="d"] .hd{background:var(--acid);color:var(--acid-ink)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px;letter-spacing:-.04em;text-transform:uppercase}
+.logo svg{width:28px;height:28px}
+.hd nav{display:flex;gap:26px;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.02em;justify-self:center}
+.hd nav span[data-on]{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+.hd .right{justify-self:end;display:flex;gap:18px;align-items:center;font-weight:700;font-size:13px;text-transform:uppercase}
+.bag{background:var(--ink);color:var(--acid);padding:6px 10px;display:flex;gap:10px;align-items:center;font-variant-numeric:tabular-nums}
+.stage[data-dir="b"] .bag{background:var(--acid);color:var(--acid-ink)}
+.stage[data-dir="d"] .bag{background:#000;color:var(--acid)}
+
+/* product page */
+.pp{background:var(--bg);min-height:900px;position:relative;overflow:hidden}
+.crumbs{padding:16px 32px 0;display:flex;gap:10px}
+.pp-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;padding:20px 32px 32px}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gal .main{grid-column:1/-1;aspect-ratio:4/5;background:var(--tile);border:var(--lw) solid var(--line);overflow:hidden;position:relative;border-radius:var(--radius)}
+.gal .th{aspect-ratio:4/5;background:var(--tile);border:var(--lw) solid var(--line);overflow:hidden;position:relative}
+.stage[data-dir="b"] .gal .main,.stage[data-dir="b"] .gal .th,.stage[data-dir="c"] .gal .main,.stage[data-dir="c"] .gal .th{border:0;box-shadow:var(--glow)}
+.gal .main .tag{position:absolute;top:12px;left:12px;background:var(--ink);color:var(--bg);font-size:11px;font-weight:800;text-transform:uppercase;padding:5px 8px;letter-spacing:.05em;z-index:2}
+.stage[data-dir="d"] .gal .main .tag,.stage[data-dir="d"] .tile .tag{background:var(--acid);color:var(--acid-ink);transform:rotate(-6deg);top:16px;left:-6px;padding:8px 14px;font-size:13px;box-shadow:2px 2px 0 #000}
+.stage[data-dir="c"] .gal .main .tag{background:transparent;color:var(--ink);font-family:var(--mono);font-weight:500;padding:0;top:14px;left:14px}
+.gal .main .lens-btn{position:absolute;right:12px;bottom:12px;background:var(--acid);color:var(--acid-ink);font-size:11px;font-weight:800;text-transform:uppercase;padding:8px 10px;display:flex;gap:6px;align-items:center;letter-spacing:.04em}
+.det{display:flex;flex-direction:column;gap:20px;padding-top:6px}
+.det h1{font-size:64px}
+.price{font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.price s{color:var(--muted);font-weight:500;font-size:18px;margin-left:8px}
+.sw{display:flex;gap:10px;align-items:center}
+.sw .dot{width:28px;height:28px;border:var(--lw) solid var(--line);cursor:pointer;position:relative}
+.sw .dot[data-on]::after{content:"";position:absolute;inset:-6px;border:2px solid var(--ink)}
+.stage[data-dir="c"] .sw .dot{border-radius:50%}
+.stage[data-dir="c"] .sw .dot[data-on]::after{border-radius:50%}
+.sizes{display:flex;gap:8px;flex-wrap:wrap}
+.size{min-width:64px;padding:12px 10px;border:var(--lw) solid var(--line);text-align:center;font-weight:800;font-size:14px;cursor:pointer;position:relative;background:var(--panel);font-family:var(--labelfont)}
+.size[data-on]{background:var(--ink);color:var(--bg)}
+.stage[data-dir="b"] .size[data-on]{background:var(--acid);color:var(--acid-ink);border-color:var(--acid)}
+.size[data-low]::after{content:attr(data-low);position:absolute;right:-6px;top:-10px;background:var(--acid);color:var(--acid-ink);font-size:10px;padding:2px 5px;font-weight:800;letter-spacing:.03em}
+.size[data-out]{color:var(--muted);border-style:dashed;cursor:not-allowed}
+.size[data-out]::before{content:"";position:absolute;left:8px;right:8px;top:50%;height:2px;background:var(--muted);transform:rotate(-12deg)}
+.row{display:flex;gap:12px;align-items:stretch}
+.qty{display:flex;border:var(--lw) solid var(--line);font-weight:800}
+.qty span{padding:14px 16px;display:grid;place-items:center;min-width:44px}
+.qty span:nth-child(2){border-inline:var(--lw) solid var(--line);font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 22px;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.03em;border:var(--lw) solid var(--line);background:var(--ink);color:var(--bg);cursor:pointer;font-family:var(--font);flex:1}
+.stage[data-dir="b"] .btn{background:var(--acid);color:var(--acid-ink);border-color:var(--acid)}
+.stage[data-dir="d"] .btn{background:var(--acid);color:var(--acid-ink)}
+.btn:hover{background:var(--acid);color:var(--acid-ink)}
+.stage[data-dir="b"] .btn:hover,.stage[data-dir="d"] .btn:hover{background:var(--ink);color:var(--bg)}
+.deliv{font-size:13px;color:var(--ink2);display:flex;gap:14px;flex-wrap:wrap}
+.deliv span::before{content:"■";color:var(--acid);margin-right:6px;font-size:10px;vertical-align:middle;-webkit-text-stroke:1px var(--ink)}
+.stage[data-dir="b"] .deliv span::before{-webkit-text-stroke:0}
+.desc{font-size:15px;line-height:1.55;max-width:48ch;color:var(--ink2)}
+.acc{border-top:var(--lw) solid var(--line)}
+.acc div{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.03em}
+.acc div span:last-child{font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted);font-family:var(--labelfont);font-size:12px}
+.rail{padding:0 32px 40px}
+.rail-h{display:flex;justify-content:space-between;align-items:baseline;padding:22px 0 14px;border-top:var(--lw) solid var(--line)}
+.rail-h h2{font-size:40px}
+.stage[data-dir="d"] .rail-h{background:var(--acid);margin:0 -32px;padding-inline:32px;border-top:2px solid #000;border-bottom:2px solid #000}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-left:var(--lw) solid var(--line)}
+.stage[data-dir="b"] .tiles,.stage[data-dir="c"] .tiles{border:0;gap:16px}
+.tile{border-right:var(--lw) solid var(--line);border-bottom:var(--lw) solid var(--line);text-decoration:none;color:inherit;display:flex;flex-direction:column;position:relative;background:var(--panel)}
+.stage[data-dir="b"] .tile,.stage[data-dir="c"] .tile{border:0;background:transparent}
+.tile .img{aspect-ratio:4/5;background:var(--tile);position:relative;overflow:hidden;perspective:900px}
+.stage[data-dir="b"] .tile .img{box-shadow:var(--glow)}
+.tile .img img{transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.tile:hover .img img{transform:scale(1.04)}
+.tile .tag{position:absolute;top:10px;left:10px;background:var(--ink);color:var(--bg);font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 7px;letter-spacing:.05em;z-index:2}
+.tile .tag.acid{background:var(--acid);color:var(--acid-ink)}
+.tile .info{padding:10px 12px 12px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.stage[data-dir="c"] .tile .info{padding-inline:0}
+.tile .info h3{font-size:14px;letter-spacing:-.02em;font-weight:800;font-variation-settings:'wdth' 90}
+.tile .info small{display:block;font-weight:500;text-transform:none;font-size:12px;color:var(--muted);margin-top:2px;letter-spacing:0;font-family:var(--labelfont)}
+.tile .pr{font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;font-family:var(--labelfont)}
+.tile .dots{display:flex;gap:4px;margin-top:6px}
+.tile .dots i{width:10px;height:10px;border:1px solid var(--line);display:block}
+.stage[data-dir="c"] .tile .dots i{border-radius:50%}
+.match{position:absolute;right:10px;bottom:10px;background:var(--acid);color:var(--acid-ink);font-family:var(--mono);font-size:11px;font-weight:500;padding:4px 7px;z-index:2}
+/* swatch flip (direction C) */
+.stage[data-dir="c"] .tile .img{transform-style:preserve-3d}
+.tile .img .alt{position:absolute;inset:0;opacity:0;transform:rotateY(90deg);transition:none}
+.stage[data-dir="c"] .tile:hover .img img.base{animation:flipOut .24s ease-in forwards}
+.stage[data-dir="c"] .tile:hover .img .alt{animation:flipIn .24s .22s ease-out forwards}
+@keyframes flipOut{to{transform:rotateY(-90deg);opacity:0}}
+@keyframes flipIn{to{transform:rotateY(0);opacity:1}}
+.stage[data-dir="c"] .tile:hover .dots i:nth-child(2){background:var(--ink)}
+/* wordmark bleed (D) */
+.bleed{display:none;position:absolute;left:-10px;bottom:-40px;font-size:220px;font-weight:900;letter-spacing:-.06em;text-transform:uppercase;line-height:.8;color:var(--acid);-webkit-text-stroke:2px #000;pointer-events:none;font-variation-settings:'wdth' 62;white-space:nowrap;z-index:0}
+.stage[data-dir="d"] .bleed{display:block}
+
+/* collection page */
+.col{background:var(--bg);min-height:900px;position:relative}
+.col-h{display:flex;justify-content:space-between;align-items:end;padding:28px 32px 16px}
+.col-h h1{font-size:120px}
+.col-h .count{font-family:var(--labelfont);color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.stage[data-dir="d"] .col-h{background:var(--acid);border-bottom:2px solid #000}
+.filters{display:flex;gap:10px;padding:0 32px 16px;flex-wrap:wrap;align-items:center}
+.chip{border:var(--lw) solid var(--line);padding:8px 12px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;background:var(--panel);display:flex;gap:8px;align-items:center;font-family:var(--labelfont)}
+.chip[data-on]{background:var(--ink);color:var(--bg)}
+.stage[data-dir="b"] .chip[data-on]{background:var(--acid);color:var(--acid-ink);border-color:var(--acid)}
+.chip .x{font-family:var(--mono);opacity:.7}
+.filters .sort{margin-left:auto}
+.col .tiles{grid-template-columns:repeat(4,1fr);margin:0 32px 32px}
+.stage[data-dir="c"] .col .tiles{grid-template-columns:repeat(3,1fr);gap:24px}
+.stage[data-dir="c"] .col .tiles .tile:nth-child(3n+2){margin-top:40px}
+.marq{border-block:var(--lw) solid var(--line);background:var(--ink);color:var(--bg);overflow:hidden;white-space:nowrap;font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:.08em;padding:9px 0}
+.stage[data-dir="b"] .marq{background:var(--acid);color:var(--acid-ink)}
+.marq div{display:inline-block;animation:marq 24s linear infinite}
+.marq span{margin:0 28px}
+.marq span::after{content:"";display:inline-block;width:8px;height:8px;background:var(--acid);margin-left:28px;vertical-align:middle}
+.stage[data-dir="b"] .marq span::after{background:#000}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* cut transition (D) */
+.cut-line{position:absolute;left:0;right:0;top:50%;height:0;border-top:3px dashed var(--ink);z-index:9;transform:scaleX(0);transform-origin:left;pointer-events:none}
+.cut-half{position:absolute;inset:0;z-index:8;overflow:hidden;background:var(--bg);pointer-events:none}
+.cut-half.top{clip-path:inset(0 0 50% 0)}
+.cut-half.bottom{clip-path:inset(50% 0 0 0)}
+.scissor{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);z-index:10;font-size:28px;pointer-events:none;opacity:0}
+.page{position:absolute;inset:0;overflow:hidden}
+.page[hidden]{display:none}
+.pp .back{position:absolute;top:16px;right:32px;z-index:3}
+.linkbtn{font:inherit;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.03em;background:transparent;border:var(--lw) solid var(--line);color:var(--ink);padding:8px 12px;cursor:pointer}
+.linkbtn:hover{background:var(--ink);color:var(--bg)}
+
+/* ---------- phone: Lens results ---------- */
+.ph{background:var(--bg);color:var(--ink);height:100%;display:flex;flex-direction:column;font-family:var(--font)}
+.ph .top{display:flex;justify-content:space-between;align-items:center;padding:52px 18px 12px;border-bottom:var(--lw) solid var(--line)}
+.stage[data-dir="d"] .ph .top{background:var(--acid);color:var(--acid-ink)}
+.ph .top .logo{font-size:18px}
+.ph .top .logo svg{width:22px;height:22px}
+.ph .body{padding:14px 16px 20px;overflow:hidden;flex:1;display:flex;flex-direction:column;gap:12px}
+.ph h2{font-size:34px}
+.ph h2 span{color:var(--acid);-webkit-text-stroke:1px var(--ink)}
+.stage[data-dir="b"] .ph h2 span{-webkit-text-stroke:0}
+.q{display:grid;grid-template-columns:132px 1fr;gap:12px;align-items:end}
+.qimg{aspect-ratio:3/4;position:relative;overflow:hidden;background:var(--tile);border:var(--lw) solid var(--line)}
+.stage[data-dir="b"] .qimg,.stage[data-dir="c"] .qimg{border:0}
+.qimg .crop{position:absolute;left:14%;top:22%;width:72%;height:46%;border:2px solid var(--acid);box-shadow:0 0 0 999px rgba(0,0,0,.28);z-index:2}
+.qimg .crop i{position:absolute;width:10px;height:10px;background:var(--acid)}
+.qimg .crop i:nth-child(1){left:-2px;top:-2px}.qimg .crop i:nth-child(2){right:-2px;top:-2px}.qimg .crop i:nth-child(3){left:-2px;bottom:-2px}.qimg .crop i:nth-child(4){right:-2px;bottom:-2px}
+.qimg .grid{position:absolute;inset:0;background-image:linear-gradient(var(--acid) 1px,transparent 1px),linear-gradient(90deg,var(--acid) 1px,transparent 1px);background-size:16px 16px;opacity:0;z-index:3;mix-blend-mode:screen}
+.qimg .scanline{position:absolute;left:0;right:0;top:-6px;height:4px;background:var(--acid);box-shadow:0 0 18px 4px rgba(214,255,59,.75);z-index:4;opacity:0}
+.qmeta{display:flex;flex-direction:column;gap:6px}
+.qmeta .big{font-size:22px;font-weight:900;letter-spacing:-.03em;text-transform:uppercase;font-variation-settings:'wdth' 75;line-height:.95}
+.qmeta .m{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.qmeta .replay{align-self:flex-start;font:inherit;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:var(--acid);color:var(--acid-ink);border:var(--lw) solid var(--line);padding:6px 9px;cursor:pointer}
+.stage[data-dir="b"] .qmeta .replay,.stage[data-dir="c"] .qmeta .replay{border-color:var(--acid)}
+.chips{display:flex;gap:6px;overflow:hidden}
+.chips .chip{padding:6px 10px;font-size:11px;white-space:nowrap}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stage[data-dir="a"] .res,.stage[data-dir="d"] .res{gap:0;border-left:var(--lw) solid var(--line);border-top:var(--lw) solid var(--line)}
+.res .tile .img{aspect-ratio:4/5}
+.res .tile .info{padding:8px 10px 10px}
+.stage[data-dir="c"] .res .tile .info{padding-inline:0}
+.res .tile .info h3{font-size:12px}
+.res .tile .pr{font-size:12px}
+.res .tile{opacity:1;transform:none}
+.res.arm .tile{opacity:0;transform:translateX(24px)}
+.res .tile.in{animation:tileIn .42s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes tileIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.res .match{right:8px;bottom:8px}
+.ph .tab{position:static}
+
+/* ticker digits */
+.tick{display:inline-flex;overflow:hidden;height:1.1em;line-height:1.1em;vertical-align:bottom;font-variant-numeric:tabular-nums}
+.tick .col{display:flex;flex-direction:column;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.tick .col span{height:1.1em;display:block}
+.tick .sep{display:block}
+
+@media (prefers-reduced-motion:reduce){
+  .marq div{animation:none}
+  .tile .img img{transition:none}
+  .res.arm .tile{opacity:1;transform:none}
+  .res .tile.in{animation:none}
+  .tick .col{transition:none}
+  .stage[data-dir="c"] .tile:hover .img img.base,.stage[data-dir="c"] .tile:hover .img .alt{animation:none}
+  .stage[data-dir="c"] .tile:hover .img .alt{opacity:1;transform:none}
+}
+</style>
+
+<div class="wrap">
+  <h1>Offcut — four directions</h1>
+  <p class="lede">Same photos, same copy, same three screens in every tab — <b>S4 product page</b> at 1280 px, <b>S16 Lens results</b> on a 390 px phone, <b>S2 collection</b> below. Only the chrome and the demonstrated motion change. The Scan plays on every phone because it is the product's wow whichever chrome wins; each direction also shows one more candidate. Keys <b>1–4</b> switch.</p>
+
+  <div class="tabs" role="tablist" aria-label="Directions">
+    <button class="tab" role="tab" data-dir="a" aria-selected="true"><kbd>1</kbd> A · Rulebook</button>
+    <button class="tab" role="tab" data-dir="b" aria-selected="false"><kbd>2</kbd> B · Blackout</button>
+    <button class="tab" role="tab" data-dir="c" aria-selected="false"><kbd>3</kbd> C · Paper stock</button>
+    <button class="tab" role="tab" data-dir="d" aria-selected="false"><kbd>4</kbd> D · Acid sheet</button>
+  </div>
+
+  <div class="note">
+    <p id="note-text"></p>
+    <div class="demo" id="note-demo"></div>
+  </div>
+
+  <div class="stage" data-dir="a" id="stage">
+    <div class="frames">
+      <div>
+        <p class="frame-label">S4 · Product page · 1280 px<span id="dlabel"></span></p>
+        <div class="tools">
+          <button id="btn-bag" type="button">Add to bag (Ticker)</button>
+          <button id="btn-cut" type="button">Cut to collection (D)</button>
+          <button id="btn-replay" type="button">Replay Scan</button>
+        </div>
+        <div class="scaler" id="desk-scaler"><div class="scaled" id="desk-scaled">
+          <div class="desktop" id="desktop">
+
+            <!-- ===== S4 product page ===== -->
+            <div class="page pp" id="page-pp">
+              <header class="hd">
+                <div class="logo"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="currentColor"/><circle cx="32" cy="32" r="18" fill="none" stroke="var(--bg)" stroke-width="7"/><polygon points="36,4 64,4 64,32" fill="#D6FF3B"/></svg>Offcut</div>
+                <nav><span>New</span><span data-on>Shop</span><span>Drops</span><span>Lens</span></nav>
+                <div class="right"><span>Search</span><span>Account</span><span class="bag">Bag <span id="bagcount">0</span> · ₹<span class="tick" id="bagtotal"></span></span></div>
+              </header>
+              <div class="marq"><div><span>Drop 04 · Indiranagar studio</span><span>Free delivery over ₹1,999</span><span>Shop the look — paste any photo</span><span>Sizes S–XL · Made in Bengaluru</span><span>Drop 04 · Indiranagar studio</span><span>Free delivery over ₹1,999</span><span>Shop the look — paste any photo</span><span>Sizes S–XL · Made in Bengaluru</span></div></div>
+              <div class="crumbs lab"><span>Shop</span><span>/</span><span>Hoodies</span><span>/</span><span style="color:var(--ink)">Heavyweight Hoodie 02</span></div>
+              <button class="linkbtn back" id="cut-trigger" type="button">← Back to Hoodies</button>
+              <div class="pp-grid">
+                <div class="gal">
+                  <div class="main"><span class="tag">Drop 04</span><img src="img/hoodie-black.jpg" alt="Black heavyweight hoodie with flame print, flat lay"><span class="lens-btn"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="5" r="3.5"/><path d="M8 8l3 3"/></svg>Search from this photo</span></div>
+                  <div class="th"><img src="img/hoodie-yellow.jpg" alt="Hoodie back detail"></div>
+                  <div class="th"><img src="img/query-hoodie.jpg" alt="Hoodie worn on the street"></div>
+                </div>
+                <div class="det">
+                  <span class="lab">Hoodies · OC-HD-002</span>
+                  <h1>Heavy­weight Hoodie 02</h1>
+                  <div class="price">₹2,999 <s>₹3,499</s></div>
+                  <div class="sw"><span class="lab" style="margin-right:6px">Colour · Black</span><span class="dot" data-on style="background:#111"></span><span class="dot" style="background:#E8B824"></span><span class="dot" style="background:#EEE"></span></div>
+                  <div>
+                    <div class="lab" style="margin-bottom:8px;display:flex;justify-content:space-between"><span>Size</span><span style="text-decoration:underline">Size guide</span></div>
+                    <div class="sizes"><span class="size">S</span><span class="size" data-on>M</span><span class="size" data-low="3 left">L</span><span class="size" data-out>XL</span></div>
+                  </div>
+                  <div class="row"><div class="qty"><span>−</span><span>1</span><span>+</span></div><button class="btn" id="add-bag" type="button">Add to bag · ₹2,999</button></div>
+                  <div class="deliv"><span>Delivered in 3–5 days</span><span>Free over ₹1,999</span><span>7-day returns</span></div>
+                  <p class="desc">420 gsm brushed-back fleece, boxy through the body, dropped shoulder, double-layer hood. The flame print is a puff-ink screen on the chest and back, cut and sewn in our Indiranagar studio.</p>
+                  <div class="acc"><div><span>Fabric</span><span>100 % cotton fleece, 420 gsm</span></div><div><span>Fit</span><span>Boxy · model is 180 cm in M</span></div><div><span>Care</span><span>Cold wash, inside out</span></div></div>
+                </div>
+              </div>
+              <div class="rail">
+                <div class="rail-h"><h2>More like this</h2><span class="lab">via embeddings · 8 nearest</span></div>
+                <div class="tiles">
+                  <a class="tile" href="#"><div class="img"><img class="base" src="img/hoodie-yellow.jpg" alt=""><img class="alt" src="img/hoodie-white.jpg" alt=""><span class="match">0.87</span></div><div class="info"><div><h3>Zip Hoodie 01</h3><small>Hoodies · 2 colours</small></div><span class="pr">₹2,799</span></div></a>
+                  <a class="tile" href="#"><div class="img"><img class="base" src="img/hoodie-white.jpg" alt=""><img class="alt" src="img/hoodie-black.jpg" alt=""><span class="match">0.84</span></div><div class="info"><div><h3>Rabbit Hoodie</h3><small>Hoodies · 1 colour</small></div><span class="pr">₹3,199</span></div></a>
+                  <a class="tile" href="#"><div class="img"><img class="base" src="img/tee-black.jpg" alt=""><img class="alt" src="img/tee-olive.jpg" alt=""><span class="match">0.71</span></div><div class="info"><div><h3>Boxy Tee 03</h3><small>Tees · 3 colours</small></div><span class="pr">₹1,299</span></div></a>
+                  <a class="tile" href="#"><div class="img"><img class="base" src="img/jacket-bomber.jpg" alt=""><img class="alt" src="img/jacket-denim.jpg" alt=""><span class="match">0.66</span></div><div class="info"><div><h3>Patch Bomber</h3><small>Jackets · 1 colour</small></div><span class="pr">₹5,499</span></div></a>
+                  <a class="tile" href="#"><div class="img"><img class="base" src="img/tee-olive.jpg" alt=""><img class="alt" src="img/tee-black.jpg" alt=""><span class="match">0.63</span></div><div class="info"><div><h3>Studio Tee</h3><small>Tees · 2 colours</small></div><span class="pr">₹1,199</span></div></a>
+                </div>
+              </div>
+              <div class="bleed" aria-hidden="true">Offcut</div>
+            </div>
+
+            <!-- ===== S2 collection page (target of the Cut) ===== -->
+            <div class="page col" id="page-col" hidden>
+              <header class="hd">
+                <div class="logo"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="currentColor"/><circle cx="32" cy="32" r="18" fill="none" stroke="var(--bg)" stroke-width="7"/><polygon points="36,4 64,4 64,32" fill="#D6FF3B"/></svg>Offcut</div>
+                <nav><span>New</span><span data-on>Shop</span><span>Drops</span><span>Lens</span></nav>
+                <div class="right"><span>Search</span><span>Account</span><span class="bag">Bag 1 · ₹2,999</span></div>
+              </header>
+              <div class="col-h"><h1>Hoodies</h1><span class="count">5 products · Drop 04</span></div>
+              <div class="filters"><span class="chip" data-on>Hoodies <span class="x">×</span></span><span class="chip">Size ▾</span><span class="chip" data-on>Black <span class="x">×</span></span><span class="chip">Under ₹3,000 ▾</span><span class="chip sort">Sort · New ▾</span></div>
+              <div class="tiles" id="col-tiles"></div>
+              <div class="marq"><div><span>Drop 04 · Indiranagar studio</span><span>Free delivery over ₹1,999</span><span>Shop the look — paste any photo</span><span>Sizes S–XL · Made in Bengaluru</span><span>Drop 04 · Indiranagar studio</span><span>Free delivery over ₹1,999</span><span>Shop the look — paste any photo</span><span>Sizes S–XL · Made in Bengaluru</span></div></div>
+              <button class="linkbtn back" id="cut-back" type="button" style="position:absolute;top:16px;right:32px;z-index:3">Open a product →</button>
+            </div>
+
+            <div class="cut-line" id="cut-line"></div>
+            <div class="scissor" id="scissor">✂</div>
+          </div>
+        </div></div>
+      </div>
+
+      <div>
+        <p class="frame-label">S16 · Lens results · 390 px</p>
+        <div class="tools"><button id="btn-replay2" type="button">Replay Scan</button></div>
+        <div class="scaler phone-scaler" id="phone-scaler"><div class="scaled" id="phone-scaled">
+          <div class="phone"><div class="notch"></div><div class="screen">
+            <div class="ph">
+              <div class="top"><div class="logo"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="currentColor"/><circle cx="32" cy="32" r="18" fill="none" stroke="var(--bg)" stroke-width="7"/><polygon points="36,4 64,4 64,32" fill="#D6FF3B"/></svg>Offcut</div><span class="bag">Bag 0</span></div>
+              <div class="body">
+                <h2>Shop the <span>look</span></h2>
+                <div class="q">
+                  <div class="qimg"><img src="img/query-hoodie.jpg" alt="Your photo: a yellow hoodie on the street"><div class="crop"><i></i><i></i><i></i><i></i></div><div class="grid" id="scan-grid"></div><div class="scanline" id="scanline"></div></div>
+                  <div class="qmeta"><span class="lab">Your photo · cropped</span><span class="big" id="q-big">Scanning…</span><span class="m" id="q-meta">jina-clip-v2 · 512-d</span><button class="replay" id="phone-replay" type="button">Replay</button></div>
+                </div>
+                <div class="chips"><span class="chip" data-on>All</span><span class="chip">Hoodies</span><span class="chip">Trousers</span><span class="chip">Sneakers</span><span class="chip">Caps</span></div>
+                <div class="res" id="res"></div>
+              </div>
+            </div>
+          </div></div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="strip">
+      <p class="frame-label">S2 · Collection · 1280 px</p>
+      <div class="scaler" id="strip-scaler"><div class="scaled" id="strip-scaled">
+        <div class="desktop" style="min-height:0">
+          <div class="col" style="min-height:0;position:relative">
+            <header class="hd">
+              <div class="logo"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="currentColor"/><circle cx="32" cy="32" r="18" fill="none" stroke="var(--bg)" stroke-width="7"/><polygon points="36,4 64,4 64,32" fill="#D6FF3B"/></svg>Offcut</div>
+              <nav><span>New</span><span data-on>Shop</span><span>Drops</span><span>Lens</span></nav>
+              <div class="right"><span>Search</span><span>Account</span><span class="bag">Bag 0</span></div>
+            </header>
+            <div class="col-h"><h1>Shop all</h1><span class="count">36 products · 8 categories</span></div>
+            <div class="filters"><span class="chip">Category ▾</span><span class="chip" data-on>M <span class="x">×</span></span><span class="chip">Colour ▾</span><span class="chip">Price ▾</span><span class="chip sort">Sort · New ▾</span></div>
+            <div class="tiles" id="strip-tiles"></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <p class="credits">Photos: Wikimedia Commons, CC licences, credits in <code>mockups/img/CREDITS.md</code>. Offcut is a fictional Bengaluru brand; the photos stand in for its product photography and for a shopper's own "query" photo.</p>
+</div>
+
+<script>
+(function(){
+  const NOTES = {
+    a: { text: "A · Rulebook — the landing's own system, unchanged: white ground, 2 px black rules boxing every tile, Archivo 900 uppercase, acid only on actions and labels. Swiss streetwear; the photos sit inside a grid the brand already owns. Cheapest to build (it is the landing), and the console inherits it as tables. Risk: with 36 products the rules can read as a spreadsheet.", demo: "Demonstrates <b>D · Ticker</b> — click Add to bag: the bag subtotal rolls; Scan on the phone." },
+    b: { text: "B · Blackout — black chrome, white type, acid accents; photos edge-to-edge with a faint acid glow, like a night drop. The Lens scan is at home here: a light sweeping a dark screen. Loudest contrast, best on a phone at night, and the owner console would need its own light variant to be usable for hours.", demo: "Demonstrates <b>A · Scan</b> — the signature, on its native ground; tiles glow on hover." },
+    c: { text: "C · Paper stock — off-white paper, 1 px hairlines, condensed 900 headings at huge sizes, and JetBrains Mono for everything the machine says: SKUs, sizes, prices, match scores. A lookbook / zine, with the product data reading as \"engineered\". Calmest of the four; the staggered collection grid is a real spread. Risk: quieter conversion cues than a store usually has.", demo: "Demonstrates <b>C · Swatch</b> — hover a tile: it flips through its colourways; Scan on the phone." },
+    d: { text: "D · Acid sheet — white with acid section bands (header, rail headers, collection header), sticker-style rotated labels with a hard shadow, and the wordmark bleeding off the page. Most \"brand\"; a poster you can buy from. Risk: acid at this dose fights the photos, and every screen needs a band to feel like the same site.", demo: "Demonstrates <b>B · Cut</b> — click Cut to collection: the page is cut along a dashed line; Scan on the phone." }
+  };
+  const stage = document.getElementById('stage');
+  const tabs = [...document.querySelectorAll('.tab')];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function setDir(d){
+    stage.dataset.dir = d;
+    tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.dir === d)));
+    document.getElementById('note-text').textContent = NOTES[d].text;
+    document.getElementById('note-demo').innerHTML = NOTES[d].demo;
+    try{ localStorage.setItem('offcut-dir', d); }catch(e){}
+    runScan();
+  }
+  tabs.forEach(t => t.addEventListener('click', () => setDir(t.dataset.dir)));
+  addEventListener('keydown', e => { const m = {'1':'a','2':'b','3':'c','4':'d'}[e.key]; if(m && !e.metaKey && !e.ctrlKey) setDir(m); });
+
+  // ---- products for the collection tiles
+  const P = [
+    ['hoodie-black','hoodie-yellow','Heavyweight Hoodie 02','Hoodies · 3 colours','₹2,999','Drop 04'],
+    ['tee-olive','tee-black','Studio Tee','Tees · 2 colours','₹1,199',''],
+    ['jacket-denim','jacket-bomber','Trucker Jacket','Jackets · 1 colour','₹4,499','New'],
+    ['cargo-olive','cargo-black','Field Cargo','Trousers · 2 colours','₹3,299',''],
+    ['sneaker-white','sneaker-canvas','Strap Low','Sneakers · 2 colours','₹4,999',''],
+    ['cap-blue','cap-blue','6-panel Cap','Caps · 1 colour','₹899','Low stock'],
+    ['bag-backpack','look-backpack','Daypack 20L','Bags · 1 colour','₹3,799',''],
+    ['jacket-bomber','jacket-denim','Patch Bomber','Jackets · 1 colour','₹5,499','Sold out'],
+  ];
+  function tile(p, match){
+    const tag = p[5] ? `<span class="tag ${p[5]==='Drop 04'?'acid':''}">${p[5]}</span>` : '';
+    const m = match ? `<span class="match">${match}</span>` : '';
+    return `<a class="tile" href="#"><div class="img">${tag}<img class="base" src="img/${p[0]}.jpg" alt="${p[2]}"><img class="alt" src="img/${p[1]}.jpg" alt="">${m}</div><div class="info"><div><h3>${p[2]}</h3><small>${p[3]}</small><div class="dots"><i style="background:#111"></i><i style="background:#E8B824"></i></div></div><span class="pr">${p[4]}</span></div></a>`;
+  }
+  document.getElementById('col-tiles').innerHTML = P.slice(0,4).map(p=>tile(p)).join('') + P.slice(4,8).map(p=>tile(p)).join('');
+  document.getElementById('strip-tiles').innerHTML = P.map(p=>tile(p)).join('');
+
+  // ---- Lens results
+  const R = [
+    ['hoodie-yellow','Zip Hoodie 01','Hoodies','₹2,799',94],
+    ['hoodie-black','Heavyweight Hoodie 02','Hoodies','₹2,999',81],
+    ['hoodie-white','Rabbit Hoodie','Hoodies','₹3,199',77],
+    ['cargo-black','Field Cargo · Black','Trousers','₹3,299',64],
+    ['tee-olive','Studio Tee','Tees','₹1,199',58],
+    ['sneaker-white','Strap Low','Sneakers','₹4,999',52],
+  ];
+  const res = document.getElementById('res');
+  res.innerHTML = R.map(r => `<a class="tile" href="#"><div class="img"><img class="base" src="img/${r[0]}.jpg" alt="${r[1]}"><span class="match"><span class="pct" data-v="${r[4]}">${r[4]}</span>%</span></div><div class="info"><div><h3>${r[1]}</h3><small>${r[2]}</small></div><span class="pr">${r[3]}</span></div></a>`).join('');
+
+  let scanTimer = [];
+  function runScan(){
+    scanTimer.forEach(clearTimeout); scanTimer = [];
+    const line = document.getElementById('scanline'), grid = document.getElementById('scan-grid');
+    const big = document.getElementById('q-big'), meta = document.getElementById('q-meta');
+    const tiles = [...res.querySelectorAll('.tile')];
+    tiles.forEach(t => t.classList.remove('in'));
+    if (reduced){
+      res.classList.remove('arm'); big.textContent = '6 matches'; meta.textContent = '0.9 s · jina-clip-v2 · 512-d';
+      tiles.forEach(t => t.querySelector('.pct').textContent = t.querySelector('.pct').dataset.v);
+      return;
+    }
+    res.classList.add('arm');
+    big.textContent = 'Scanning…'; meta.textContent = 'jina-clip-v2 · 512-d';
+    tiles.forEach(t => t.querySelector('.pct').textContent = '00');
+    // scanline sweep
+    line.style.transition = 'none'; line.style.top = '-6px'; line.style.opacity = '1';
+    grid.style.transition = 'opacity .3s'; grid.style.opacity = '.55';
+    void line.offsetWidth;
+    line.style.transition = 'top .7s linear'; line.style.top = 'calc(100% + 6px)';
+    scanTimer.push(setTimeout(() => { line.style.opacity = '0'; grid.style.opacity = '.2'; big.textContent = '6 matches'; meta.textContent = '0.9 s · jina-clip-v2 · 512-d'; }, 720));
+    tiles.forEach((t, i) => {
+      scanTimer.push(setTimeout(() => {
+        t.classList.add('in');
+        const el = t.querySelector('.pct'), v = +el.dataset.v, t0 = performance.now();
+        (function step(now){ const k = Math.min(1, (now - t0) / 600); el.textContent = String(Math.round(v * (1 - Math.pow(1 - k, 3)))).padStart(2,'0'); if (k < 1) requestAnimationFrame(step); })(t0);
+      }, 640 + i * 70));
+    });
+  }
+  document.getElementById('btn-replay').addEventListener('click', runScan);
+  document.getElementById('btn-replay2').addEventListener('click', runScan);
+  document.getElementById('phone-replay').addEventListener('click', runScan);
+
+  // ---- Ticker
+  function tick(el, str){
+    const chars = str.split('');
+    if (el.childElementCount !== chars.length) {
+      el.innerHTML = chars.map(c => /\d/.test(c) ? `<span class="col">${'0123456789'.split('').map(d=>`<span>${d}</span>`).join('')}</span>` : `<span class="sep">${c}</span>`).join('');
+    }
+    [...el.children].forEach((c, i) => { if (c.classList.contains('col')) c.style.transform = `translateY(-${+chars[i] * 1.1}em)`; else c.textContent = chars[i]; });
+  }
+  const bagtotal = document.getElementById('bagtotal'); tick(bagtotal, '0');
+  let bagN = 0;
+  function addBag(){ bagN++; document.getElementById('bagcount').textContent = bagN; const v = bagN * 2999; const s = v.toLocaleString('en-IN'); if (bagtotal.childElementCount !== s.length) { tick(bagtotal, s.replace(/\d/g,'0')); requestAnimationFrame(()=>requestAnimationFrame(()=>tick(bagtotal, s))); } else tick(bagtotal, s); }
+  document.getElementById('btn-bag').addEventListener('click', addBag);
+  document.getElementById('add-bag').addEventListener('click', addBag);
+
+  // ---- Cut transition
+  const desktop = document.getElementById('desktop'), pp = document.getElementById('page-pp'), col = document.getElementById('page-col');
+  const cutLine = document.getElementById('cut-line'), scissor = document.getElementById('scissor');
+  let cutting = false;
+  function cut(from, to){
+    if (cutting) return; cutting = true;
+    if (reduced){ from.hidden = true; to.hidden = false; cutting = false; return; }
+    const top = from.cloneNode(true), bot = from.cloneNode(true);
+    [top, bot].forEach(c => { c.removeAttribute('id'); c.classList.add('cut-half'); c.querySelectorAll('[id]').forEach(n => n.removeAttribute('id')); });
+    top.classList.add('top'); bot.classList.add('bottom');
+    desktop.append(top, bot);
+    from.hidden = true; to.hidden = false;
+    cutLine.style.transition = 'none'; cutLine.style.transform = 'scaleX(0)'; scissor.style.opacity = '1'; scissor.style.transition = 'none'; scissor.style.left = '0';
+    void cutLine.offsetWidth;
+    cutLine.style.transition = 'transform .38s linear'; cutLine.style.transform = 'scaleX(1)';
+    scissor.style.transition = 'left .38s linear'; scissor.style.left = '100%';
+    setTimeout(() => {
+      scissor.style.opacity = '0';
+      [top, bot].forEach(c => c.style.transition = 'transform .55s cubic-bezier(.6,0,.2,1)');
+      top.style.transform = 'translateY(-52%)'; bot.style.transform = 'translateY(52%)';
+      setTimeout(() => { top.remove(); bot.remove(); cutLine.style.transform = 'scaleX(0)'; cutting = false; }, 600);
+    }, 400);
+  }
+  document.getElementById('btn-cut').addEventListener('click', () => cut(pp.hidden ? col : pp, pp.hidden ? pp : col));
+  document.getElementById('cut-trigger').addEventListener('click', () => cut(pp, col));
+  document.getElementById('cut-back').addEventListener('click', () => cut(col, pp));
+
+  // ---- scaling
+  function fit(scalerId, scaledId, w){
+    const sc = document.getElementById(scalerId), s = document.getElementById(scaledId);
+    const k = Math.min(1, sc.clientWidth / w);
+    s.style.transform = `scale(${k})`;
+    sc.style.height = (s.offsetHeight * k) + 'px';
+  }
+  function fitAll(){ fit('desk-scaler','desk-scaled',1280); fit('phone-scaler','phone-scaled',390); fit('strip-scaler','strip-scaled',1280); }
+  addEventListener('resize', fitAll);
+  new ResizeObserver(fitAll).observe(document.getElementById('desk-scaled'));
+  new ResizeObserver(fitAll).observe(document.getElementById('strip-scaled'));
+
+  let start = 'a'; try{ start = localStorage.getItem('offcut-dir') || 'a'; }catch(e){}
+  setDir(NOTES[start] ? start : 'a');
+  fitAll(); setTimeout(fitAll, 300); addEventListener('load', fitAll);
+})();
+</script>
