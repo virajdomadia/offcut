@@ -77,6 +77,7 @@ Index: `create index on product_photos using hnsw (embedding vector_cosine_ops)`
 - **Bag drawer:** client store (`useCart`) hydrated from `GET /cart`; optimistic add; revalidated on open.
 - **Checkout:** one client component; loads `checkout.js` (Razorpay) lazily on the page; `Pay` → `POST /api/checkout` → `new Razorpay(options).open()` → handler → `POST /api/checkout/{id}/verify` → `router.push` to success; `ondismiss` shows "Payment not completed — stock is held for 15 min".
 - **Owner console:** `app/(owner)/owner/*` behind a layout that 404s non-owners; product editor = one form with a variant matrix (sizes × colourways, stock inputs); photo panel posts files sequentially with per-file progress and pipeline result (swatch, ThumbHash preview, embedded ✓).
+- **Share target (v4):** `manifest.webmanifest` with `share_target` (POST multipart, `files: photo`); `sw.js` handles the share POST (`event.request.formData()` → `caches.open('share').put('/shared-photo', new Response(file))` → `Response.redirect('/lens?shared=1')`); `/lens` on `?shared=1` reads the cached file, deletes it, and enters the crop step. App shell precached (`/lens`, fonts, icons) so the share sheet works offline until the search call.
 - **Lens (v2):** `app/(shop)/lens` client page: drop zone with `paste` listener and `capture="environment"` input; canvas downscale to ≤ 1024 px; `react-easy-crop` → crop box in *source* pixels; `POST /api/lens/search` multipart; results grid. The signature motion (chosen in [04-ui-mockups.md](04-ui-mockups.md)) plays between submit and results.
 - **Motion signature and visual direction:** decided in [04-ui-mockups.md](04-ui-mockups.md) from 3–4 variants. On the table: *Scan* (acid scanline over the query photo, matches tile in ranked), *Cut* (page transitions cut along a dashed line), *Swatch* (product tiles flip through colourways on hover), *Ticker* (stock/price tickers).
 
@@ -91,6 +92,8 @@ Home / collection / product: tag-cached with a 5-min revalidate; API `GET /produ
 |---|---|
 | Jina down during ingest | Photo saved without embedding + `embed_error`; console offers retry; the product still sells |
 | Jina down during Lens search (v2) | 503 `search_unavailable`, page shows "Try again in a moment" and the text search link |
+| Lens monthly cap reached (v2) | 429 `lens_paused` — "Lens is resting until the 1st"; text search and More like this keep working (stored vectors, no call) |
+| Share target on iOS (v4) | Safari has no Web Share Target; the Lens shows the paste / picker path and hides the install card |
 | Razorpay modal dismissed | Order stays `pending_payment` 15 min; checkout page can re-open the modal for the same order (no second reservation) |
 | Verify never arrives (tab closed) | Webhook `payment.captured` marks paid; the order email (v2) / account shows it |
 | Webhook before verify / replayed | `mark_paid` idempotent; `webhook_events.id` unique |

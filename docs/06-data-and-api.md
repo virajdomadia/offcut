@@ -65,6 +65,7 @@ commit;
 ```
 
 **v2 additions:** `returns (id, order_id fk, order_line_id fk, reason text, state text, refund_id text null, decided_by fk null, created_at, decided_at null)` index (order_id); `email_log (id, order_id fk, kind text, sent_at)`; `users.reset_token`, `reset_expires_at`.
+**v2 additions (cont.):** `usage_counters (month char(7) pk, lens_queries int)` — the Lens budget guard; `rl:lens:{ip}` 60 s int (10/min).
 **v3 additions:** `discounts (code citext pk, type text, value int, min_order_paise int, expires_at, uses int, max_uses int null)`; `orders.discount_code`; `product_photos.duplicate_of uuid null` (recorded when the owner reuses instead of uploading).
 
 ## B. Blob keys
@@ -149,6 +150,9 @@ Error envelope everywhere: `{ "error": { "code": "out_of_stock", "message": "…
 | POST 👑 | `/owner/returns/{id}/decide` | `{ approve: bool, note? }` → refund → `Order` |
 | GET 👑 | `/owner/dashboard?days=7\|30` | `{ revenue_paise, orders, aov_paise, top_products[], low_stock }` |
 | POST | `/auth/forgot` · `/auth/reset` | Resend link |
+
+### v4 (web only)
+`/manifest.webmanifest` (share_target) · `/sw.js` · `POST /lens/share` (handled by the service worker, never reaches the API) · `/lens?shared=1`.
 
 ### v3 (sketch; detailed when v3 starts)
 `POST /lens/search` accepts `crops: []` → `{ boards: [{ crop, matches[] }] }` · `GET /home` adds `for_you` from `X-Viewed` (cookie of last 20 product ids) · `POST /owner/products/{id}/photos` returns `duplicate_of?: { photo, score }` when ≥ 0.95 · `GET/POST/DELETE /owner/discounts` · `POST /checkout` validates `discount_code` · daily low-stock digest (`scripts/low_stock_digest.py`, run by hand or a Vercel cron once the project moves off Hobby).
