@@ -1,10 +1,10 @@
 # PRD — Offcut: D2C fashion store + AI visual search
 
-**Status:** v1 · lifecycle steps 1–7 in progress (2026-09-17) — see [docs/](docs/) · next: step 8 Project Setup (= milestone 1.0), **after Frontrow** (build order 1 → 2 → 4 → 5 → 3 → 6)
+**Status:** v1 · lifecycle steps 1–7 complete (2026-09-17) — see [docs/](docs/) · next: step 8 Project Setup (= milestone 1.0), **after Frontrow** (build order 1 → 2 → 4 → 5 → 3 → 6)
 **Name:** Offcut · *streetwear, no filler*
 **URL:** https://offcut.virajdomadia.com (landing live at https://offcut-viraj.vercel.app until DNS)
 **Slot:** #4 · Budget ~35 h (v1 16 · v2 11 · v3 8) · Build third
-**Live artifacts:** Tracker · Screens · Direction variants — links added as each is published (step 4 / 7)
+**Live artifacts:** [Tracker](https://claude.ai/artifact/L6HANndrvG7ZxktQqRfS8y) (plan rows with status, all docs, mockups, project facts) · [Screens](https://claude.ai/artifact/QRyBudWEkRwfHRsW8DGmvH) (every v1 screen, direction H · Court) · [Direction variants](https://claude.ai/artifact/GXn8tPnv8uMhKXMxjtZeoG) (A–H, H chosen) · Landing: https://offcut-viraj.vercel.app
 
 ## One-liner
 A complete D2C streetwear store for a fictional Bengaluru brand — variants, stock, cart, Razorpay checkout, orders, returns, an owner console — where every product photo goes through an image pipeline into a vector index, so the store can say "more like this" from day one and, in v2, "**drop in a photo of an outfit, find the closest pieces we sell**".
@@ -76,7 +76,7 @@ Marketplace / multi-brand · wishlists · reviews · multi-currency · shipping-
 - v1: "More like this" returns same-category items in the top 3 for every seeded product (eval script).
 - v2: 8 of the 10 held-out outfit photos put a correct-category product with a sensible look in the top 3; search responds ≤ 1.5 s p50.
 - Lighthouse mobile ≥ 90 perf / 100 a11y / 100 SEO on home, collection and product pages (ThumbHash placeholders, `next/image`, no CLS in the gallery).
-- A visible frontend signature chosen in step 4 (candidates: *Scan*, *Cut*, *Swatch*, *Ticker*), themed browser surfaces, reduced-motion fallbacks.
+- A visible frontend signature: the **Scan** on the Lens (scanline → match count stamps in → tiles pop with their % counting up; chosen in step 4, direction H · Court), Fly to bag + Ticker in v1, themed browser surfaces, reduced-motion fallbacks.
 
 ## Resolved questions
 - *Marketplace or one brand?* One brand; platform = code + seed (Viraj, 2026-09-17).

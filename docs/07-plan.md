@@ -1,7 +1,7 @@
 # Offcut — Development Plan
 
 **Lifecycle step:** 7 of 17 · **Written:** 2026-09-17 · **Inputs:** [03-requirements.md](03-requirements.md), [04-technical-design.md](04-technical-design.md), [06-data-and-api.md](06-data-and-api.md).
-**Tracker:** row status lives in the tracker artifact (link added when published; rebuild the page with `python mockups/tracker-build.py`).
+**Tracker:** row status lives at https://claude.ai/artifact/L6HANndrvG7ZxktQqRfS8y (updated per milestone; rebuild the page with `python mockups/tracker-build.py`).
 **Budget:** v1 ≈ 16 h · v2 ≈ 11 h · v3 ≈ 8 h. v1 runs the whole image pipeline and the vector query from milestone 1.0, so v2 adds an input (the shopper's photo) and a screen, not an engine. **Cadence:** evenings/weekends; each row = one branch + one PR, squash-merged, and **every PR shows something in the browser**. Milestones end deployed. **Build starts after Frontrow** (order 1 → 2 → 4 → 5 → 3 → 6).
 
 **Lean rules in force** (2026-09-15): setup is the minimum to deploy both apps with plain CI; no observability, contract gates, e2e workflows or tracker updates per PR; review findings fixed on the same branch; tests only from 04 §11. Hours saved go to the product page, the Lens and the photos. **Accounts and keys are created just-in-time** — in the row that first needs them, never in a setup batch: **Neon in S2, Vercel Blob + Jina in S3, Razorpay in F4, Resend in L3.** Photos are CC from Wikimedia Commons, fetched by script in S3.
