@@ -33,4 +33,4 @@ pnpm dev
 ```
 
 ## Roadmap
-v1 **Store** (≈ 16 h) → v2 **Lens** (≈ 11 h) → v3 **Full fit** (≈ 8 h) — rows and estimates in [docs/07-plan.md](docs/07-plan.md).
+v1 **Store** (≈ 16 h) → v2 **Lens** (≈ 11 h) → v3 **Full fit** (≈ 8 h) → v4 **Share to Offcut** (≈ 3 h, the unique free feature) — rows, estimates and the add-on bucket in [docs/07-plan.md](docs/07-plan.md).

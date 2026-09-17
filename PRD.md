@@ -3,7 +3,7 @@
 **Status:** v1 · lifecycle steps 1–7 complete (2026-09-17) — see [docs/](docs/) · next: step 8 Project Setup (= milestone 1.0), **after Frontrow** (build order 1 → 2 → 4 → 5 → 3 → 6)
 **Name:** Offcut · *streetwear, no filler*
 **URL:** https://offcut.virajdomadia.com (landing live at https://offcut-viraj.vercel.app until DNS)
-**Slot:** #4 · Budget ~35 h (v1 16 · v2 11 · v3 8) · Build third
+**Slot:** #4 · Budget ~38 h (v1 16 · v2 11 · v3 8 · v4 3) · Build third
 **Live artifacts:** [Tracker](https://claude.ai/artifact/L6HANndrvG7ZxktQqRfS8y) (plan rows with status, all docs, mockups, project facts) · [Screens](https://claude.ai/artifact/QRyBudWEkRwfHRsW8DGmvH) (every v1 screen, direction H · Court) · [Direction variants](https://claude.ai/artifact/GXn8tPnv8uMhKXMxjtZeoG) (A–H, H chosen) · Landing: https://offcut-viraj.vercel.app
 
 ## One-liner
@@ -18,6 +18,7 @@ A complete D2C streetwear store for a fictional Bengaluru brand — variants, st
 - Clients ask for stores more than anything else; this proves one shipped end to end on a phone, with real money flow (test mode) and stock that never goes negative.
 - E-commerce data modelling (product → variants → inventory, reservations, an order state machine) is what recruiters probe.
 - Visual search adds a second AI shape (vision + embeddings + pgvector) distinct from Tripsmith's agent — and the same joint image/text space powers text search, "for you" and duplicate detection for free.
+- **The unique feature (v4, ₹0 per use): share any photo from Instagram or your camera roll straight to Offcut.** The store installs as a PWA and registers as a share target, so the Lens meets shoppers where their photos already are — no app store, no paid call added.
 
 ## Locked decisions (2026-09-17) — follow these until the project ends
 
@@ -39,18 +40,19 @@ Offcut **is** the brand: a fictional Bengaluru streetwear label (Indiranagar stu
 Each product: 2–3 photos (hero, detail, on-body where Commons has one), 1–3 colourways × sizes S–XL (sneakers: UK 6–11; caps/bags: one size) → ~150 variants, stock 0–40 so some sizes read "sold out". All photos are **CC from Wikimedia Commons**, pulled by a script per category with a licence filter, credits in `api/app/seed/photos/CREDITS.md`, embedded at seed time through the same pipeline the owner uses. Plus **10 held-out query photos** (outfit shots, not in the catalogue) for the search eval. Two demo logins on the landing: **shopper** (has one delivered order and an address) and **owner**.
 
 ### 3. Versions — base → mid → advanced
-Every project is cut base → mid → advanced (rule set 2026-09-15). v1 alone is a complete, sellable store — and it already runs the pipeline and the vector index, so v2 adds an input, not an engine.
+Every project is cut base → mid → advanced (rule set 2026-09-15), plus one unique free feature as v4 (rule set 2026-09-17). v1 alone is a complete, sellable store — and it already runs the pipeline and the vector index, so v2 adds an input, not an engine, and v4 adds a front door.
 
 | Version | Ships | Proves | ~Hours |
 |---|---|---|---|
 | **v1 Store** (base) | Auth (email + password, `oc_session`, roles shopper/owner; two demo logins) · home + collection pages with filters (category, size, colour, price), sort, Postgres full-text search · product page: gallery with ThumbHash blur-up, size × colour variants, stock state, **"More like this"** (pgvector) · cookie cart (guest + merge on sign-in) · **Razorpay** Standard Checkout with stock reservation under row locks, HMAC verify + webhook, order state machine `pending_payment → paid → packed → shipped → delivered` (+ `expired`, `cancelled`) · order tracking by number + email; account: orders, address book · **Owner console:** products & variants CRUD, photo upload → **the image pipeline** (sniff → EXIF strip → resize → ThumbHash → dominant colour → Jina embedding → Blob → pgvector), inventory adjustments, orders board with transitions · seed (decision 2) | A complete store; the model recruiters probe (variants, reservations, state machine, idempotent payments); the pipeline and the vector index are live before the wow needs them | 16 |
 | **v2 Lens** (mid) | **Shop the look:** upload / drag / paste a photo → crop → top 12 matches with similarity %, category filter; "Search from this photo" on any product image · **text-to-image search** ("olive cargo pants") hybrid with full-text (reciprocal-rank fusion) · returns: request within 7 days of delivered → owner approves → Razorpay refund · order emails (Resend: confirmed, shipped) · owner sales dashboard (7 / 30 d) | The wow; one joint embedding space serving image *and* text queries | 11 |
 | **v3 Full fit** (advanced) | **Shop the whole look:** several crops on one photo → one query each → an outfit board with one match per garment, "Add the fit to bag" · **For you** rail: centroid of recently viewed product embeddings → nearest items (cookie-based, no account) · owner near-duplicate check at upload ("0.97 similar to Boxy Tee 03 — reuse it?") + low-stock alerts · discount codes | Embeddings as a product surface, not a feature | 8 |
+| **v4 Share to Offcut** (unique, free) | Offcut installs as a **PWA** (manifest, service worker, install prompt on the Lens) and registers a **Web Share Target**: share an image from Instagram, WhatsApp or Photos → Offcut opens on the crop step with that photo → results. "How to share from Instagram" card; works offline until the search itself | Reach: the Lens leaves the site and lives in the phone's share sheet — the one thing nobody expects from a store, at ₹0 per use (Viraj, 2026-09-17) | 3 |
 
 ### 4. The engine: one pipeline, one vector column, one query
 - **Ingest (v1)** — inline in the owner's upload request, no queue: `POST /owner/products/{id}/photos` (multipart, ≤ 8 MB, jpeg/png/webp) → **Pillow** sniff, EXIF orientation applied and metadata stripped, resize ≤ 2000 px → **ThumbHash** (the blur-up placeholder, ~25 bytes) + **dominant colour** (quantised on a 64 px thumb; feeds the colour filter) → **Vercel Blob** `products/{product_id}/{uuid}.jpg` → **Jina `jina-clip-v2`** image embedding, Matryoshka-truncated to **512 dims** and L2-normalised → `product_photos.embedding vector(512)` with `model` + `dims`. ~1–2 s per photo, all inside the request.
 - **Index and query** — pgvector **HNSW** `vector_cosine_ops` on `product_photos.embedding`. One query for every feature: nearest photos `LIMIT 60` → group by product keeping the best distance → drop the source product → top 12; `score = 1 − distance`. "More like this" (v1) feeds the product's hero embedding; Shop the look (v2) feeds the shopper's crop; text search (v2) feeds a Jina **text** embedding of the query — same space, same SQL; "For you" (v3) feeds the centroid of recently viewed products.
-- **Search (v2)** — shopper photo ≤ 5 MB → Pillow sniff, crop box applied server-side, resize ≤ 1024 px → embed → query. The query image lives in memory for the request and is **never stored**. Target ≤ 1.5 s p50 from `bom1` (embedding call ≈ 400–800 ms).
+- **Search (v2)** — shopper photo ≤ 5 MB → Pillow sniff, crop box applied server-side, resize ≤ 1024 px → embed → query. The query image lives in memory for the request and is **never stored**. Target ≤ 1.5 s p50 from `bom1` (embedding call ≈ 400–800 ms). **Budget guard:** Jina's free tier (10M tokens, no card) covers thousands of queries; the Lens is rate-limited to 10 searches/min/IP and a monthly counter in Postgres switches it to "back tomorrow" before the tier is exhausted, so the search never bills.
 - **Embedder boundary** — `services/embedder.py` defines `Embedder.embed_images(list[bytes]) → list[list[float]]` and `embed_texts`; `JinaEmbedder` is the only implementation; the documented fallback is Voyage `voyage-multimodal-3` (same protocol, re-embed ~100 photos via the seed command, no schema change).
 - **Why hosted, why not self-hosted or in-browser:** `api/` runs on Vercel functions (250 MB bundle, no GPU) — torch does not fit, an ONNX int8 CLIP would add seconds of cold start to the demo, and a 90 MB in-browser model is not something a shopper's phone should download. One HTTPS call in the request is the lean answer; the protocol keeps the choice reversible.
 
@@ -67,6 +69,9 @@ Shared stack from [`projects/README.md`](../README.md): `web/` Next.js App Route
 ## The wow moment (v2)
 Screenshot an outfit from Instagram. Drop it on the store. A scanline sweeps the photo, and the closest pieces Offcut sells tile in, ranked, each with a match percentage — the cargo pants at 91 %, a similar jacket at 84 %. Tap one, pick a size, pay. Under a minute on a phone.
 
+## Add-ons (after v4, only from time saved)
+Nice-to-have, not priority (Viraj, 2026-09-17): listed in [docs/07-plan.md](docs/07-plan.md) — back-in-stock + wishlist · fit feedback · customer photos · bundles · COD · courier API · "what they wanted" · gift cards. Skipping all of them is fine.
+
 ## Out of scope (all versions)
 Marketplace / multi-brand · wishlists · reviews · multi-currency · shipping-rate APIs (flat ₹99, free over ₹1,999) · marketing emails · COD · size guides beyond a static table · mobile owner console (owner = desktop) · real-money billing · storing shopper query photos.
 
@@ -76,6 +81,7 @@ Marketplace / multi-brand · wishlists · reviews · multi-currency · shipping-
 - v1: "More like this" returns same-category items in the top 3 for every seeded product (eval script).
 - v2: 8 of the 10 held-out outfit photos put a correct-category product with a sensible look in the top 3; search responds ≤ 1.5 s p50.
 - Lighthouse mobile ≥ 90 perf / 100 a11y / 100 SEO on home, collection and product pages (ThumbHash placeholders, `next/image`, no CLS in the gallery).
+- v4: on an Android phone, share an Instagram screenshot to the installed Offcut → results in one tap; iOS falls back to the paste / picker path.
 - A visible frontend signature: the **Scan** on the Lens (scanline → match count stamps in → tiles pop with their % counting up; chosen in step 4, direction H · Court), Fly to bag + Ticker in v1, themed browser surfaces, reduced-motion fallbacks.
 
 ## Resolved questions

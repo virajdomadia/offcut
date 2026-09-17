@@ -2,7 +2,7 @@
 
 **Lifecycle step:** 7 of 17 · **Written:** 2026-09-17 · **Inputs:** [03-requirements.md](03-requirements.md), [04-technical-design.md](04-technical-design.md), [06-data-and-api.md](06-data-and-api.md).
 **Tracker:** row status lives at https://claude.ai/artifact/L6HANndrvG7ZxktQqRfS8y (updated per milestone; rebuild the page with `python mockups/tracker-build.py`).
-**Budget:** v1 ≈ 16 h · v2 ≈ 11 h · v3 ≈ 8 h. v1 runs the whole image pipeline and the vector query from milestone 1.0, so v2 adds an input (the shopper's photo) and a screen, not an engine. **Cadence:** evenings/weekends; each row = one branch + one PR, squash-merged, and **every PR shows something in the browser**. Milestones end deployed. **Build starts after Frontrow** (order 1 → 2 → 4 → 5 → 3 → 6).
+**Budget:** v1 ≈ 16 h · v2 ≈ 11 h · v3 ≈ 8 h · v4 ≈ 3 h. v1 runs the whole image pipeline and the vector query from milestone 1.0, so v2 adds an input (the shopper's photo) and a screen, not an engine. **Cadence:** evenings/weekends; each row = one branch + one PR, squash-merged, and **every PR shows something in the browser**. Milestones end deployed. **Build starts after Frontrow** (order 1 → 2 → 4 → 5 → 3 → 6).
 
 **Lean rules in force** (2026-09-15): setup is the minimum to deploy both apps with plain CI; no observability, contract gates, e2e workflows or tracker updates per PR; review findings fixed on the same branch; tests only from 04 §11. Hours saved go to the product page, the Lens and the photos. **Accounts and keys are created just-in-time** — in the row that first needs them, never in a setup batch: **Neon in S2, Vercel Blob + Jina in S3, Razorpay in F4, Resend in L3.** Photos are CC from Wikimedia Commons, fetched by script in S3.
 
@@ -46,7 +46,7 @@ Goal: both apps deployed, the catalogue seeded through the real pipeline, direct
 ### Milestone 2.0 — Shop the look (≈ 4.5 h) 🟢
 | # | Part | web/ | api/ | Est. | Done when |
 |---|---|---|---|---|---|
-| L1 | **Lens: drop, crop, search, results** | S15 `/lens` — `DropZone` (drag, picker, **paste**, camera), `image-downscale.ts` ≤ 1024 px, `Cropper` (`react-easy-crop`, source-pixel box, "use whole photo"); S16 `Results` (query pinned, 12 matches with %, category chips re-query); **the signature motion (Scan) between submit and results**; "Search from this photo" on S4 images | `POST /lens/search` (sniff, crop, embed, `nearest()` with category, group, top 12, `took_ms`), 503 `search_unavailable`; `scripts/eval_lens.py` over `seed/queries/` | 3.5 h | Paste an Instagram outfit screenshot → ranked matches ≤ 1.5 s p50 on prod; `eval_lens.py` ≥ 8/10; the Scan plays with a reduced-motion fallback |
+| L1 | **Lens: drop, crop, search, results** | S15 `/lens` — `DropZone` (drag, picker, **paste**, camera), `image-downscale.ts` ≤ 1024 px, `Cropper` (`react-easy-crop`, source-pixel box, "use whole photo"); S16 `Results` (query pinned, 12 matches with %, category chips re-query); **the signature motion (Scan) between submit and results**; "Search from this photo" on S4 images | `POST /lens/search` (sniff, crop, embed, `nearest()` with category, group, top 12, `took_ms`), 503 `search_unavailable`; **budget guard:** 10 searches/min/IP + `usage_counters(month, lens_queries)` → 429 `lens_paused` past the monthly cap (stays inside Jina's free tier); `scripts/eval_lens.py` over `seed/queries/` | 3.5 h | Paste an Instagram outfit screenshot → ranked matches ≤ 1.5 s p50 on prod; `eval_lens.py` ≥ 8/10; the Scan plays with a reduced-motion fallback |
 | L2 | **Hybrid text search** | S3 shows a "semantic" hint on vector-side hits | `embed_texts` + RRF in `services/search.py`; `/search` hybrid; **test:** `rrf_fusion_order` | 1 h | "olive cargo pants" ranks cargo trousers first with no name match |
 
 ### Milestone 2.1 — Operations (≈ 6.5 h) 🟢🟠
@@ -69,4 +69,41 @@ Goal: both apps deployed, the catalogue seeded through the real pipeline, direct
 | A3 | **Near-duplicates + low-stock digest** | S13 shows "looks like *Boxy Tee 03* — reuse?" with both thumbnails; reuse links the photo | Upload response adds `duplicate_of` when nearest ≥ 0.95; `scripts/low_stock_digest.py` (Resend) | 1.5 h | Uploading the same file twice prompts; the digest lists the right variants |
 | A4 | **Discount codes + v3 close** | Code field on S6 with inline validation; owner CRUD page | `discounts`, `/owner/discounts*`, `/checkout` applies and stores `discount_paise`; Razorpay amount reflects it; `docs/17-post-launch.md` (½ page); case study | 2 h | Expired / minimum-unmet codes refused with reasons; v3 tagged; case study live |
 
-**v3 total ≈ 8 h** · **Project total ≈ 35 h**
+**v3 total ≈ 8 h**
+
+---
+
+## v4 — Share to Offcut (≈ 3 h) — the unique free feature 🟢
+Same core, a new front door: the Lens in the phone's share sheet. ₹0 per use beyond the v2 budget guard (Viraj, 2026-09-17).
+
+| # | Part | web/ | api/ | Est. | Done when |
+|---|---|---|---|---|---|
+| U1 | **PWA + Web Share Target** | `manifest.webmanifest` (name, icons from `brand/`, `display: standalone`, `share_target: { action: "/lens/share", method: "POST", enctype: "multipart/form-data", params: { files: [{ name: "photo", accept: ["image/*"] }] } }`); service worker that intercepts the share POST, stashes the file in Cache Storage and redirects to `/lens?shared=1`; `/lens` reads it, downscales, opens the crop step; app shell precached so the share works offline up to the search | — (search unchanged) | 2 h | On Android: share an Instagram screenshot to Offcut → crop step with the photo → results; the share works from Photos, WhatsApp and Chrome |
+| U2 | **Install + v4 close** | Install prompt on the Lens (`beforeinstallprompt`, dismissible, remembered); "Share to Offcut" card on the Lens drop zone with the three-step how-to (Android) and the paste fallback (iOS); README section "the Lens in your share sheet"; `docs/17-post-launch.md` (½ page); case study | — | 1 h | Reviewer installs from the Lens in one tap; v4 tagged; case study live |
+
+**v4 total ≈ 3 h** · **Project total ≈ 38 h**
+
+---
+
+## Whole-product summary
+| Version | Milestones | Hours | Cumulative |
+|---|---|---|---|
+| v1 Store | 1.0 – 1.2 | 16 | 16 |
+| v2 Lens | 2.0 – 2.1 | 11 | 27 |
+| v3 Full fit | 3.0 | 8 | 35 |
+| v4 Share to Offcut | 4.0 | 3 | 38 |
+| Add-ons (in priority order) | A back-in-stock + wishlist (3) · B fit feedback (3) · C customer photos (5) · D bundles (3) · E COD (3) · F courier API (4) · G what they wanted (2) · H gift cards (4) | up to 27 | up to 65 |
+
+## Add-ons (only from time saved)
+**Nice-to-have, not priority** (Viraj, 2026-09-17): considered only after v4 is fully done (docs and case study included), in this order, from time saved — and skipping all of them is a fine outcome. None is a version; none changes the engine. All free to run.
+
+| # | Add-on | What | Version it extends | ~h |
+|---|---|---|---|---|
+| A | **Back-in-stock + wishlist** | "Notify me" on a sold-out size (already a state on S18) → Resend mail when the owner restocks; a wishlist for signed-in shoppers | v1 | 3 |
+| B | **Fit feedback** | Size guide per category plus "true to size / runs small / runs large" votes from delivered orders, summarised on the size row | v1 | 3 |
+| C | **Customer photos** | Reviews with photos on delivered orders; the photos run through the pipeline so the Lens can match against real people wearing the piece | v2 | 5 |
+| D | **Bundles** | "The fit" bundles built from v3 outfit boards with a bundle price; the owner composes them in the console | v3 | 3 |
+| E | **COD** | Cash on delivery with OTP confirmation, a COD fee, and its own state path (`confirmed` instead of `paid`) | v1 | 3 |
+| F | **Courier API** | Delhivery / Shiprocket rate quotes at checkout and a tracking webhook that moves `shipped → delivered` on its own | v1 | 4 |
+| G | **What they wanted** | Owner report of text searches and Lens queries with no good match (category and score only — no photos stored): what to stock next | v2 | 2 |
+| H | **Gift cards / store credit** | Buy a code, redeem at checkout; returns can issue credit instead of a refund | v2 | 4 |

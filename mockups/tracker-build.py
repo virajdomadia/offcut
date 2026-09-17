@@ -26,7 +26,9 @@ for line in read("docs/07-plan.md").splitlines():
     m = re.match(r"^### (Milestone [\d.]+) — (.+?) \(≈ ([\d.]+) h\)", line)
     if m: milestone = f"{m.group(1)} · {m.group(2)}"; continue
     if line.startswith("## v3"): milestone = "Milestone 3.0 · Full fit"
-    m = re.match(r"^\| ([SFLAD]\d+) \| \*\*(.+?)\*\* \|(.*)\|$", line)
+    if line.startswith("## v4"): milestone = "Milestone 4.0 · Share to Offcut"
+    if line.startswith("## Whole-product"): break
+    m = re.match(r"^\| ([SFLADU]\d+) \| \*\*(.+?)\*\* \|(.*)\|$", line)
     if m:
         cells = [c.strip() for c in m.group(3).split("|")]
         # v1 tables carry a Who column; v2/v3 do not
@@ -182,7 +184,8 @@ a{color:var(--guide)}
     ['One-liner', 'A complete D2C store for a fictional Bengaluru streetwear brand, where every product photo goes through an image pipeline into pgvector — "more like this" from day one, "drop in a photo, find the closest pieces" in v2.'],
     ['URLs', 'offcut.virajdomadia.com · api.offcut.virajdomadia.com · landing at offcut-viraj.vercel.app until DNS'],
     ['Repo', `<a href="${L.repo}" target="_blank" rel="noopener">github.com/virajdomadia/offcut</a> · web/ Next.js 15 · api/ FastAPI + Pillow + pgvector`],
-    ['Versions', '<b>v1 Store</b> 16 h → <b>v2 Lens</b> 11 h → <b>v3 Full fit</b> 8 h ≈ 35 h'],
+    ['Versions', '<b>v1 Store</b> 16 h → <b>v2 Lens</b> 11 h → <b>v3 Full fit</b> 8 h → <b>v4 Share to Offcut</b> 3 h ≈ 38 h · add-ons after v4 only from time saved'],
+    ['Unique feature', 'v4: the store installs as a PWA and registers as a Web Share Target — share any photo from Instagram / Photos straight to the Lens; ₹0 per use (Jina free tier guarded by a rate limit + monthly cap)'],
     ['Engine', 'Pillow → ThumbHash + dominant colour → Vercel Blob → Jina jina-clip-v2 (512-d) → pgvector HNSW; one nearest() query serves More like this, Shop the look, text search and For you'],
     ['Money', 'Razorpay Standard Checkout; stock reserved under row locks at checkout, confirmed idempotently by verify or webhook; lazy 15-min expiry; order state machine in one dict'],
     ['Seed', '36 products / 8 categories / ~150 variants / ~100 CC photos embedded through the real pipeline; 10 held-out query photos; demo shopper + owner'],
