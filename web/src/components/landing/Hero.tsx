@@ -5,7 +5,7 @@ export function Hero() {
         <div className="big" aria-hidden="true">OFFC<span>UT</span></div>
         <div className="hero-row">
           <div>
-            <h2>Cut from what's left. Made in Bengaluru. No filler.</h2>
+            <h1>Cut from what's left. Made in Bengaluru. No filler.</h1>
             <p className="lede">Heavy tees, cargos and caps in short runs. When a drop sells out, that's it — we don't restock, we cut the next one.</p>
             <div className="cta"><a className="btn btn-fill" href="#new">Shop drop 03</a><a className="btn" href="#look">Find a look from a photo</a></div>
           </div>
