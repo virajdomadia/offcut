@@ -2,7 +2,7 @@
 
 **Streetwear, no filler.** A complete D2C streetwear store — variants, inventory, cart, orders, returns, admin — plus "upload a photo, shop the look" visual search.
 
-> Status: lifecycle steps 1–7 complete (2026-09-17) — see [PRD.md](PRD.md), [docs/](docs/), the [tracker](https://claude.ai/artifact/L6HANndrvG7ZxktQqRfS8y) and the [screens](https://claude.ai/artifact/QRyBudWEkRwfHRsW8DGmvH) (direction H · Court). Next: step 8 Project Setup, after Frontrow. One of six portfolio projects by [Viraj Domadia](https://virajdomadia.com). **Live (landing page):** https://offcut.virajdomadia.com
+> Status: lifecycle steps 1–7 complete (2026-09-17) — see [PRD.md](PRD.md), [docs/](docs/), the [tracker](https://claude.ai/artifact/L6HANndrvG7ZxktQqRfS8y) and the [screens](https://claude.ai/artifact/QRyBudWEkRwfHRsW8DGmvH) (direction H · Court). Next: step 8 Project Setup, after Pagecraft (build order revised 2026-11-19). One of six portfolio projects by [Viraj Domadia](https://virajdomadia.com). **Live (landing page):** https://offcut.virajdomadia.com
 
 ## What it proves
 E-commerce data model (variants, reservations, order state machine) · an image pipeline (Pillow → ThumbHash → Blob → Jina CLIP embeddings → pgvector) · visual + text search in one embedding space · Razorpay with idempotent confirmation
